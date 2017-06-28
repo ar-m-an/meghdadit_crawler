@@ -24,7 +24,23 @@ def get_subcat(site_url):
 
 def get_subcat_pages(subcat_url):
     """ Return a url list of subcategory product pages divided by pagination """
+    page_source = get_source(subcat_url)
+    html_DOM = BeautifulSoup(page_source, "html.parser")
 
+    # CSS Selector for pagination buttons in products page
+    selector = ".paging-wrapper a.paging.paging-color"
+    pages = html_DOM.select(selector)
+
+    # Check if there is no pagination
+    if not pages:
+        return [subcat_url]
+
+    # Get the last page index in pagination
+    last_page_index = int(pages[-1].get_text())
+
+    # Generate URL for paginated products pages
+    subcat_pages = ["%spage.%d/" % (subcat_url, i) for i in range(1, last_page_index + 1)]
+    return subcat_pages
 
 def get_page_items(page_url):
     """  Return a list of product url"""
@@ -35,4 +51,5 @@ if __name__ == "__main__":
     site_url = "http://meghdadit.com/"
 
     # print(get_source(site_url))
-    print(get_subcat(site_url))
+    # print(get_subcat(site_url))
+    print(get_subcat_pages('http://meghdadit.com/productlist/20/b.19/ipp.40/'))
