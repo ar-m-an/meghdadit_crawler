@@ -66,11 +66,31 @@ def get_page_items(page_url):
 
     return items_detail
 
+
 if __name__ == "__main__":
 
     site_url = "http://meghdadit.com/"
+    output_url = "./out.txt"
 
-    # print(get_source(site_url))
-    # print(get_subcat(site_url))
-    # print(get_subcat_pages('http://meghdadit.com/productlist/20/b.19/ipp.40/'))
-    print(get_page_items('http://meghdadit.com/productlist/20/b.19/ipp.40/page.1/'))
+    # Open output file
+    out = open(output_url, 'w', encoding='utf-8')
+
+    # Get subcategories
+    subcats = get_subcat(site_url)
+    for subcat in subcats:
+        if subcat:
+            print("*** Crawling Subcategory: %s \n" % subcat)
+
+            # Get product pages for subcategories
+            pages = get_subcat_pages(subcat)
+            for page in pages:
+                print("\n****** Crawling Product Page: %s \n" % page)
+                items = get_page_items(page)
+                if items:
+
+                    # Get items in product page
+                    for title, price, url in items:
+                        print("%s, %s" % (title, price))
+                        out.write("%s, %s \n" % (price, url))
+
+    out.close()
