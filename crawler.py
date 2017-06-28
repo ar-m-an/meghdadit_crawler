@@ -22,6 +22,7 @@ def get_subcat(site_url):
 
     return subcats
 
+
 def get_subcat_pages(subcat_url):
     """ Return a url list of subcategory product pages divided by pagination """
     page_source = get_source(subcat_url)
@@ -42,9 +43,28 @@ def get_subcat_pages(subcat_url):
     subcat_pages = ["%spage.%d/" % (subcat_url, i) for i in range(1, last_page_index + 1)]
     return subcat_pages
 
+
 def get_page_items(page_url):
     """  Return a list of product url"""
+    page_source = get_source(page_url)
+    if not page_source: return
+    html_DOM = BeautifulSoup(page_source, "html.parser")
 
+    # CSS Selectors for Item div, title, price, url
+    item_selector = "div.item"
+    item_url_selector = "a.item-title-text"
+    item_title_selector = "a.item-title-text"
+    item_price_selector = "span.item-price"
+
+    # Select all Item divs
+    items = html_DOM.select(item_selector)
+
+    # Get Title, Price, and URL of the products
+    items_detail = [(item.select(item_title_selector)[0].get_text(),
+                     item.select(item_price_selector)[0].get_text(),
+                     item.select(item_url_selector)[0].get('href')) for item in items]
+
+    return items_detail
 
 if __name__ == "__main__":
 
@@ -52,4 +72,5 @@ if __name__ == "__main__":
 
     # print(get_source(site_url))
     # print(get_subcat(site_url))
-    print(get_subcat_pages('http://meghdadit.com/productlist/20/b.19/ipp.40/'))
+    # print(get_subcat_pages('http://meghdadit.com/productlist/20/b.19/ipp.40/'))
+    print(get_page_items('http://meghdadit.com/productlist/20/b.19/ipp.40/page.1/'))
