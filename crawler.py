@@ -4,10 +4,13 @@ from bs4 import BeautifulSoup
 
 def get_source(url):
     """ Return HTML source of requested url"""
-    req = urllib.request.Request(url)
-    with urllib.request.urlopen(req) as response:
-        page_source = response.read()
-        return page_source
+    try:
+        req = urllib.request.Request(url)
+        with urllib.request.urlopen(req) as response:
+            page_source = response.read()
+            return page_source
+    except:
+        print("Error Opening url: %s" % url)
 
 
 def get_subcat(site_url):
